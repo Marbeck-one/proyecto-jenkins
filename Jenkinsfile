@@ -1,22 +1,20 @@
 // Jenkinsfile
 
 pipeline {
-    agent any // Ejecutar en el agente de Jenkins (que ahora tiene python)
+    agent any 
 
     stages {
-        // Etapa 1: Preparar el entorno (Instalar pipenv)
-        stage('Install Tools') {
+        // Etapa 1: Verificar que las herramientas están instaladas
+        stage('Verify Tools') {
             steps {
-                sh 'python3 --version' // Verificar que ahora sí funciona
-                sh 'pip install pipenv'  // Instalar pipenv
+                sh 'python3 --version' 
+                sh 'pipenv --version'  // Verificamos que pipenv existe
             }
         }
 
-        // Etapa 2: Instalar Dependencias
+        // Etapa 2: Instalar Dependencias del Proyecto
         stage('Install Dependencies') {
             steps {
-                // pipenv install' usa el requirements.txt
-                // y crea un Pipfile y Pipfile.lock
                 sh 'pipenv install'
             }
         }
@@ -25,10 +23,7 @@ pipeline {
         stage('Analyze Security') {
             steps {
                 echo 'Iniciando análisis de vulnerabilidades...'
-
-                // 'pipenv check' escanea el Pipfile.lock
-                // Usamos '|| true' para que el build NO FALLE
-                // si encuentra un error (queremos ver el reporte).
+                // 'pipenv check' escanea el entorno
                 sh 'pipenv check || true'
             }
         }
